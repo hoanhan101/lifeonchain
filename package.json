@@ -1,5 +1,5 @@
 {
-    "name": "leetcat",
+    "name": "lifeonchain",
     "devDependencies": {
         "@nomicfoundation/hardhat-toolbox": "^2.0.2",
         "erc721a": "^4.2.3",
