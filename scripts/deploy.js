@@ -116,7 +116,7 @@ async function main() {
     const contractSupply = 333;
 
     const scriptName = "lifeonchain";
-    const scriptVersion = "1.0.0";
+    const scriptVersion = "1.0.1";
     const contractScriptName = `${scriptName}-v${scriptVersion}`;
     console.log(`Start deploying ${contractScriptName}`);
 

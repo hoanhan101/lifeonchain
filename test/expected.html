@@ -20,6 +20,10 @@
             var modeIndex = 10;
         </script>
         <script>
+            /**
+             * @title LifeOnchain is an onchain and interactive implementation of Conway's Game of Life
+             * @author hoanh.eth
+             */
             const SPEED = [
                 { name: "blistering", value: 10 },
                 { name: "rapid", value: 30 },
@@ -62,7 +66,11 @@
                 { name: "original", value: [2, 3, 3, 3] },
             ];
 
-            document.addEventListener("DOMContentLoaded", function (event) {
+            let started = false;
+            function start() {
+                if (started) return;
+                started = true;
+
                 let pixelSize = 8;
 
                 let container = document.body;
@@ -97,7 +105,18 @@
                     sim.setRules(...MODES[modeIndex].value);
                 }
                 sim.start();
-            });
+            }
+
+            // Try thedude's workaround for OpenSea strange reloading issue
+            function tryToStart() {
+                if (window.innerWidth == 0 || window.innerHeight == 0) {
+                    setTimeout(() => {
+                        tryToStart();
+                    }, 1);
+                } else {
+                    start();
+                }
+            }
 
             // Conway's Game of Life implementation
             // https://github.com/Tebs-Lab/conways-game-of-life
@@ -458,6 +477,11 @@
                     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
                 };
             }
+
+            tryToStart();
+            window.addEventListener("DOMContentLoaded", () => {
+                tryToStart();
+            });
         </script>
     </body>
 </html>
