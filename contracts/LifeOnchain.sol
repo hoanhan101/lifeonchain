@@ -33,7 +33,8 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     bool public _isOpen = false;
 
     string[][3] traitsNames;
-    uint16[][3] traitsRarities;
+    //uint16[][3] traitsRarities;
+    bytes32 traitsRaritiesHash;
 
     string[16] thumbnailsColorsLeft;
     string[16] thumbnailsColorsRight;
@@ -49,6 +50,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     error TokenDoesntExist();
     error ZeroBalance();
     error FailToWithdraw();
+    error InvalidTraits();
 
     constructor(
         string memory name,
@@ -56,11 +58,13 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
         uint256 supply,
         string memory scriptyScriptName,
         address scriptyStorageAddress,
-        address scriptyBuilderAddress
+        address scriptyBuilderAddress,
+        bytes32 _traitsRaritiesHash
     ) ERC721A(name, symbol) {
         _scriptyScriptName = scriptyScriptName;
         _scriptyStorageAddress = scriptyStorageAddress;
         _scriptyBuilderAddress = scriptyBuilderAddress;
+        traitsRaritiesHash = _traitsRaritiesHash;
 
         _supply = supply;
 
@@ -104,7 +108,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             "original"
         ];
 
-        traitsRarities[0] = [500, 500, 1500, 2000, 2500, 3000];
+        /*traitsRarities[0] = [500, 500, 1500, 2000, 2500, 3000];
         traitsRarities[1] = [
             125,
             225,
@@ -135,7 +139,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             1200,
             1300,
             1600
-        ];
+        ];*/
 
         thumbnailsColorsLeft = [
             "#000000",
@@ -193,52 +197,58 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     /**
      * @notice Mint function
      */
-    function mint() public payable {
+    function mint(uint256 amount, uint256[][] calldata traitsRarities) public payable {
         if (!_isOpen) revert MintClosed();
         if (msg.sender != tx.origin) revert ContractMinter();
-        if (msg.value < _price) revert InsufficientFunds();
+        if (msg.value < (_price * amount)) revert InsufficientFunds();
+        if(keccak256(abi.encode(traitsRarities)) != traitsRaritiesHash) revert InvalidTraits();
         uint totalMinted = _totalMinted();
         unchecked {
-            if (totalMinted > _supply) revert SoldOut();
+            if ((totalMinted + amount) > _supply) revert SoldOut();
         }
 
-        uint16[3] memory combination = getTraitsCombination(totalMinted);
-        Traits memory traits;
-        traits.speedIndex = combination[0];
-        traits.colorIndex = combination[1];
-        traits.modeIndex = combination[2];
-        livesTraits[totalMinted] = traits;
+        setTraitsCombination(totalMinted, amount, traitsRarities);
 
-        _safeMint(msg.sender, 1, "");
+        _safeMint(msg.sender, amount, "");
     }
 
     /**
      * @notice Get an unique DNA for a given token ID
      */
-    function getTraitsCombination(
-        uint256 tokenId
-    ) internal returns (uint16[3] memory traits) {
+    function setTraitsCombination(
+        uint256 startTokenId,
+        uint256 amount,
+        uint256[][] calldata traitsRarities
+    ) internal {
         uint256 seed = uint256(
             keccak256(
                 abi.encodePacked(
-                    block.number,
-                    "11f30nch41n",
-                    SmallSolady.toString(tokenId),
+                    block.difficulty,
+                    startTokenId,
                     address(this)
                 )
             )
         );
-        while (true) {
-            traits[0] = getRandomTraitIndex(traitsRarities[0], seed);
-            traits[1] = getRandomTraitIndex(traitsRarities[1], seed >> 16);
-            traits[2] = getRandomTraitIndex(traitsRarities[2], seed >> 32);
 
-            bytes32 combination = keccak256(abi.encodePacked(traits));
-            if (foundTraits[combination] == false) {
+        uint256 currentTokenId = startTokenId;
+        Traits memory traits;
+        while (true) {
+            traits.speedIndex = getRandomTraitIndex(traitsRarities[0], seed);
+            traits.colorIndex = getRandomTraitIndex(traitsRarities[1], seed >> 16);
+            traits.modeIndex = getRandomTraitIndex(traitsRarities[2], seed >> 32);
+
+            bytes32 combination = keccak256(abi.encode(traits));
+            if (!foundTraits[combination]) {
                 foundTraits[combination] = true;
-                return traits;
+                livesTraits[currentTokenId] = traits;
+
+                unchecked { 
+                    ++currentTokenId; 
+                    if(currentTokenId > (startTokenId + amount)) break;
+                }
+                seed = uint256(keccak256(abi.encode(seed)));
             }
-            seed++;
+            unchecked { ++seed; }
         }
     }
 
@@ -247,16 +257,16 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
      * Inspired by Anonymice (0xbad6186e92002e312078b5a1dafd5ddf63d3f731)
      */
     function getRandomTraitIndex(
-        uint16[] memory traitRarities,
+        uint256[] calldata traitRarities,
         uint256 seed
     ) private pure returns (uint16 index) {
-        uint16 rand = uint16(seed % 10000);
-        uint16 lowerBound;
-        for (uint16 i = 0; i < traitRarities.length; i++) {
-            uint16 percentage = traitRarities[i];
+        uint256 rand = seed % 10000;
+        uint256 lowerBound;
+        for (uint256 i = 0; i < traitRarities.length; i++) {
+            uint256 percentage = traitRarities[i];
 
             if (rand < percentage + lowerBound && rand >= lowerBound) {
-                return i;
+                return uint16(i);
             }
             lowerBound = lowerBound + percentage;
         }
