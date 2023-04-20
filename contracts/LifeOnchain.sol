@@ -33,7 +33,6 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     bool public _isOpen = false;
 
     string[][3] traitsNames;
-    //uint16[][3] traitsRarities;
     bytes32 traitsRaritiesHash;
 
     string[16] thumbnailsColorsLeft;
@@ -193,7 +192,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     ) internal {
         uint256 seed = uint256(
             keccak256(
-                abi.encodePacked(block.difficulty, startTokenId, address(this))
+                abi.encodePacked(block.prevrandao, startTokenId, address(this))
             )
         );
 

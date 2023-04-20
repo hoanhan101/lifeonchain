@@ -128,6 +128,8 @@ async function main() {
     const contractName = "LIFEONCHAIN";
     const contractSymbol = "LIFE";
     const contractSupply = 333;
+    const traitsRaritiesHash =
+        "0x43252ab79379691f924d20ae52eae95ea7897214a8cc7f8f475ef571bc4bc022";
 
     const scriptName = "lifeonchain";
     const scriptVersion = "1.0.2";
@@ -169,7 +171,8 @@ async function main() {
         contractSupply,
         contractScriptNameMinified,
         scriptyStorageContract.address,
-        scriptyBuilderContract.address
+        scriptyBuilderContract.address,
+        traitsRaritiesHash
     );
     await nftContract.deployed();
     console.log("Contract is deployed", nftContract.address);
@@ -187,6 +190,7 @@ async function main() {
                 contractScriptNameMinified,
                 scriptyStorageContract.address,
                 scriptyBuilderContract.address,
+                traitsRaritiesHash,
             ],
         });
     }
