@@ -3,7 +3,7 @@
     "devDependencies": {
         "@nomicfoundation/hardhat-toolbox": "^2.0.2",
         "erc721a": "^4.2.3",
-        "hardhat": "^2.13.0",
+        "hardhat": "^2.14.0",
         "scripty.sol": "^1.0.2"
     },
     "dependencies": {
