@@ -86,12 +86,12 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             "hacker black",
             "circuit board",
             "cyber yellow",
-            "neon pink"
-            "hackerman blue"
-            "lime green"
-            "cyber purple"
-            "ghost in the shell"
-            "cylon red"
+            "neon pink",
+            "hackerman blue",
+            "lime green",
+            "cyber purple",
+            "ghost in the shell",
+            "cylon red",
             "darknet red"
         ];
         traitsNames[2] = [
@@ -197,11 +197,15 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     /**
      * @notice Mint function
      */
-    function mint(uint256 amount, uint256[][] calldata traitsRarities) public payable {
+    function mint(
+        uint256 amount,
+        uint256[][] calldata traitsRarities
+    ) public payable {
         if (!_isOpen) revert MintClosed();
         if (msg.sender != tx.origin) revert ContractMinter();
         if (msg.value < (_price * amount)) revert InsufficientFunds();
-        if(keccak256(abi.encode(traitsRarities)) != traitsRaritiesHash) revert InvalidTraits();
+        if (keccak256(abi.encode(traitsRarities)) != traitsRaritiesHash)
+            revert InvalidTraits();
         uint totalMinted = _totalMinted();
         unchecked {
             if ((totalMinted + amount) > _supply) revert SoldOut();
@@ -222,11 +226,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     ) internal {
         uint256 seed = uint256(
             keccak256(
-                abi.encodePacked(
-                    block.difficulty,
-                    startTokenId,
-                    address(this)
-                )
+                abi.encodePacked(block.difficulty, startTokenId, address(this))
             )
         );
 
@@ -234,21 +234,29 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
         Traits memory traits;
         while (true) {
             traits.speedIndex = getRandomTraitIndex(traitsRarities[0], seed);
-            traits.colorIndex = getRandomTraitIndex(traitsRarities[1], seed >> 16);
-            traits.modeIndex = getRandomTraitIndex(traitsRarities[2], seed >> 32);
+            traits.colorIndex = getRandomTraitIndex(
+                traitsRarities[1],
+                seed >> 16
+            );
+            traits.modeIndex = getRandomTraitIndex(
+                traitsRarities[2],
+                seed >> 32
+            );
 
             bytes32 combination = keccak256(abi.encode(traits));
             if (!foundTraits[combination]) {
                 foundTraits[combination] = true;
                 livesTraits[currentTokenId] = traits;
 
-                unchecked { 
-                    ++currentTokenId; 
-                    if(currentTokenId > (startTokenId + amount)) break;
+                unchecked {
+                    ++currentTokenId;
+                    if (currentTokenId > (startTokenId + amount)) break;
                 }
                 seed = uint256(keccak256(abi.encode(seed)));
             }
-            unchecked { ++seed; }
+            unchecked {
+                ++seed;
+            }
         }
     }
 
