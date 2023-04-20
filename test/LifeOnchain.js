@@ -142,7 +142,7 @@ describe("LifeOnchain", function () {
             const toMint = 10;
             await expect(
                 lifeContract.mint(toMint, traitsRarities, {
-                    value: ethers.utils.parseEther("1"),
+                    value: ethers.utils.parseEther("10"),
                 })
             );
             expect(await lifeContract.totalSupply()).to.equal(toMint);
