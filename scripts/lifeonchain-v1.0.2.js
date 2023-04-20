@@ -1,3 +1,7 @@
+/**
+ * @title LifeOnchain is an onchain and interactive implementation of Conway's Game of Life
+ * @author hoanh.eth
+ */
 const SPEED = [
     { name: "blistering", value: 10 },
     { name: "rapid", value: 30 },
@@ -40,7 +44,11 @@ const MODES = [
     { name: "original", value: [2, 3, 3, 3] },
 ];
 
-document.addEventListener("DOMContentLoaded", function (event) {
+let started = false;
+function start() {
+    if (started) return;
+    started = true;
+
     let pixelSize = 8;
 
     let container = document.body;
@@ -52,9 +60,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     container.style.width = containerWidth + "px";
 
     let seed = cyrb128(tokenID.toString());
-    let rand = sfc32(seed[0], seed[1], seed[2], seed[3]);
     let randSim = mulberry32(seed[0]);
-    let randColor = mulberry32(seed[1]);
 
     let sim = new ConwaySimulator(
         rows,
@@ -77,7 +83,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
         sim.setRules(...MODES[modeIndex].value);
     }
     sim.start();
-});
+}
+
+// Try thedude's workaround for OpenSea strange reloading issue
+function tryToStart() {
+    if (
+        window.innerWidth == 0 ||
+        window.innerHeight == 0 ||
+        document.body == null
+    ) {
+        setTimeout(() => {
+            tryToStart();
+        }, 1);
+    } else {
+        start();
+    }
+}
 
 // Conway's Game of Life implementation
 // https://github.com/Tebs-Lab/conways-game-of-life
@@ -415,23 +436,6 @@ function cyrb128(str) {
     ];
 }
 
-function sfc32(a, b, c, d) {
-    return function () {
-        a >>>= 0;
-        b >>>= 0;
-        c >>>= 0;
-        d >>>= 0;
-        var t = (a + b) | 0;
-        a = b ^ (b >>> 9);
-        b = (c + (c << 3)) | 0;
-        c = (c << 21) | (c >>> 11);
-        d = (d + 1) | 0;
-        t = (t + d) | 0;
-        c = (c + t) | 0;
-        return (t >>> 0) / 4294967296;
-    };
-}
-
 function mulberry32(a) {
     return function () {
         var t = (a += 0x6d2b79f5);
@@ -440,3 +444,8 @@ function mulberry32(a) {
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
 }
+
+tryToStart();
+window.addEventListener("DOMContentLoaded", () => {
+    tryToStart();
+});
