@@ -1,7 +1,21 @@
+const path = require("path");
+const fs = require("fs");
+
 const hre = require("hardhat");
+const Terser = require("Terser");
+
 const utilities = require("../utils/utils");
 const deployedContracts = require("../utils/deployedContracts");
-const path = require("path");
+
+const minifyJS = async (code) => {
+    return (
+        await Terser.minify(code, {
+            mangle: true,
+            ecma: 8,
+            compress: false,
+        })
+    ).code;
+};
 
 const waitIfNeeded = async (tx) => {
     if (tx.wait) {
@@ -116,10 +130,18 @@ async function main() {
     const contractSupply = 333;
 
     const scriptName = "lifeonchain";
-    const scriptVersion = "1.0.1";
+    const scriptVersion = "1.0.2";
     const contractScriptName = `${scriptName}-v${scriptVersion}`;
-    console.log(`Start deploying ${contractScriptName}`);
+    const contractScriptNameMinified = `${contractScriptName}.min`;
 
+    console.log(`Minify script file ${contractScriptNameMinified}.js`);
+    const payload = fs.readFileSync(`${__dirname}/${contractScriptName}.js`, {
+        encoding: "utf8",
+    });
+    const minified = await minifyJS(payload);
+    fs.writeFileSync(`${__dirname}/${contractScriptNameMinified}.js`, minified);
+
+    console.log(`Start deploying ${contractScriptNameMinified}.js`);
     if (hre.network.name == "localhost" && !hre.network.config.forking) {
         console.warn("Only deploy to localhost that forks mainnet");
         return;
@@ -129,11 +151,13 @@ async function main() {
     const { scriptyStorageContract, scriptyBuilderContract } =
         await deployOrGetContracts(hre.network.name);
 
-    console.log("Store the JS script on scripty in chunks");
+    console.log(
+        `Store the ${contractScriptNameMinified} script on scripty in chunks`
+    );
     await storeScript(
         scriptyStorageContract,
-        contractScriptName,
-        `./${contractScriptName}.js`
+        contractScriptNameMinified,
+        `./${contractScriptNameMinified}.js`
     );
 
     console.log("Deploy the main contract");
@@ -143,7 +167,7 @@ async function main() {
         contractName,
         contractSymbol,
         contractSupply,
-        contractScriptName,
+        contractScriptNameMinified,
         scriptyStorageContract.address,
         scriptyBuilderContract.address
     );
@@ -160,7 +184,7 @@ async function main() {
                 contractName,
                 contractSymbol,
                 contractSupply,
-                contractScriptName,
+                contractScriptNameMinified,
                 scriptyStorageContract.address,
                 scriptyBuilderContract.address,
             ],
