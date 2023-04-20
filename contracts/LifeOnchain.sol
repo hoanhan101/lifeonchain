@@ -108,39 +108,6 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             "original"
         ];
 
-        /*traitsRarities[0] = [500, 500, 1500, 2000, 2500, 3000];
-        traitsRarities[1] = [
-            125,
-            225,
-            325,
-            525,
-            525,
-            525,
-            625,
-            625,
-            625,
-            725,
-            825,
-            825,
-            825,
-            825,
-            925,
-            925
-        ];
-        traitsRarities[2] = [
-            200,
-            500,
-            700,
-            800,
-            800,
-            900,
-            1000,
-            1000,
-            1200,
-            1300,
-            1600
-        ];*/
-
         thumbnailsColorsLeft = [
             "#000000",
             "#000000",

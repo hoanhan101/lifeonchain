@@ -58,6 +58,7 @@ describe("LifeOnchain", function () {
             lifeContract,
             contractScriptName,
             traitsRarities,
+            contractSupply,
         };
     }
 
@@ -134,12 +135,16 @@ describe("LifeOnchain", function () {
         });
 
         it("Multiple", async function () {
-            const { lifeContract, contractScriptName, traitsRarities } =
-                await deploy();
+            const {
+                lifeContract,
+                contractScriptName,
+                traitsRarities,
+                contractSupply,
+            } = await deploy();
 
             await lifeContract.setMintStatus(true);
 
-            const toMint = 10;
+            const toMint = parseInt(contractSupply / 10);
             await expect(
                 lifeContract.mint(toMint, traitsRarities, {
                     value: ethers.utils.parseEther("10"),
