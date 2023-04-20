@@ -10,3 +10,4 @@ cache
 artifacts
 
 test/output-*.html
+test/test*.html

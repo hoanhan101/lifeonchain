@@ -32,11 +32,14 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
 
     bool public _isOpen = false;
 
-    string[][3] public traitsNames;
-    uint16[][3] public traitsRarities;
+    string[][3] traitsNames;
+    uint16[][3] traitsRarities;
 
-    mapping(bytes32 => bool) public foundTraits;
-    mapping(uint256 => Traits) public livesTraits;
+    string[16] thumbnailsColorsLeft;
+    string[16] thumbnailsColorsRight;
+
+    mapping(bytes32 => bool) foundTraits;
+    mapping(uint256 => Traits) livesTraits;
 
     error MintClosed();
     error ContractMinter();
@@ -132,6 +135,44 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             1200,
             1300,
             1600
+        ];
+
+        thumbnailsColorsLeft = [
+            "#000000",
+            "#000000",
+            "#00ff00",
+            "#00ffff",
+            "#00ff00",
+            "#c0c0c0",
+            "#1c1c1c",
+            "#00ff7f",
+            "#000000",
+            "#00ff00",
+            "#ffffff",
+            "#000000",
+            "#00ffff",
+            "#1c1c1c",
+            "#00ff00",
+            "#00ff00"
+        ];
+
+        thumbnailsColorsRight = [
+            "#000000",
+            "#4dff4d",
+            "#0f701e",
+            "#04af6d",
+            "#ff00ff",
+            "#ff2400",
+            "#000000",
+            "#7f00ff",
+            "#f9dc24",
+            "#ff0090",
+            "#1e90ff",
+            "#00ff7f",
+            "#8a2be2",
+            "#ff6a00",
+            "#c21e56",
+            "#a62b2b"
         ];
     }
 
@@ -247,7 +288,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
         WrappedScriptRequest[] memory requests = new WrappedScriptRequest[](3);
         requests[0].wrapType = 4;
         requests[0]
-            .scriptContent = "%253Cstyle%253Ebody%257Bbackground-color%253A%2520%2523111111%253B%2520margin%253A%2520auto%253B%2520display%253A%2520grid%253B%2520grid-template-columns%253A%2520repeat%25281%252C%25201fr%2529%253B%2520grid-template-rows%253A%2520repeat%25282%252C%252010px%252C%25201fr%2529%253B%257Dcanvas%257Bborder%253A%25202px%2520solid%2520black%253B%257D%253C%252Fstyle%253E";
+            .scriptContent = "%253Cstyle%253Ebody%257Bbackground-color%253A%2520%2523111111%253B%2520margin%253A%2520auto%253B%2520display%253A%2520grid%253B%2520grid-template-columns%253A%2520repeat%25281%252C%25201fr%2529%253B%2520grid-template-rows%253A%2520repeat%25282%252C%252010px%252C%25201fr%2529%253B%257D%253C%252Fstyle%253E";
         requests[1].name = "";
         requests[1].wrapType = 1;
         requests[1].scriptContent = vars;
@@ -262,7 +303,8 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             SmallSolady.toString(tokenId),
             '", "description":"',
             "LifeOnchain is an onchain and interactive implementation of Conway's Game of Life",
-            '","image":"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQwIiBoZWlnaHQ9IjY0MCIgdmlld0JveD0iMCAwIDI1NiAyNTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3R5bGU9ImJhY2tncm91bmQtY29sb3I6YmxhY2siPjwvc3ZnPg==',
+            '","image":"data:image/svg+xml;base64,',
+            buildThumbnail(traits.colorIndex),
             '","animation_url":"',
             buildAnimationURI(requests),
             '",',
@@ -336,6 +378,24 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
                 "=",
                 SmallSolady.toString(value),
                 ";"
+            );
+    }
+
+    /**
+     * @notice Build thumbnail
+     */
+    function buildThumbnail(
+        uint256 colorIndex
+    ) internal view returns (string memory thumbnail) {
+        return
+            SmallSolady.encode(
+                abi.encodePacked(
+                    '<svg width="100%" height="100%" viewBox="0 0 20000 20000" xmlns="http://www.w3.org/2000/svg"> <rect x="0%" y="0%" width="50%" height="100%" fill="',
+                    thumbnailsColorsLeft[colorIndex],
+                    '"/> <rect x="50%" y="0%" width="50%" height="100%" fill="',
+                    thumbnailsColorsRight[colorIndex],
+                    '"/></svg>'
+                )
             );
     }
 

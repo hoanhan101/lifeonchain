@@ -7,7 +7,7 @@ const { randomInt } = require("crypto");
 describe("LifeOnchain", function () {
     async function deploy() {
         const contractCodeName = "LifeOnchain";
-        const contractName = "LifeOnchain";
+        const contractName = "LIFEONCHAIN";
         const contractSymbol = "LIFE";
         const contractSupply = 333;
 
@@ -93,6 +93,7 @@ describe("LifeOnchain", function () {
             expect(await lifeContract.totalSupply()).to.equal(1);
 
             const tokenURI = await lifeContract.tokenURI(0);
+            console.log(tokenURI.split("data:application/json,")[1]);
             const payload = JSON.parse(
                 tokenURI.split("data:application/json,")[1]
             );

@@ -111,7 +111,7 @@ async function storeScript(storageContract, name, filePath) {
 
 async function main() {
     const contractCodeName = "LifeOnchain";
-    const contractName = "LifeOnchain";
+    const contractName = "LIFEONCHAIN";
     const contractSymbol = "LIFE";
     const contractSupply = 333;
 
