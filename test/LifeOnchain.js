@@ -12,7 +12,7 @@ describe("LifeOnchain", function () {
         const contractSupply = 333;
 
         const scriptName = "lifeonchain";
-        const scriptVersion = "1.1.0";
+        const scriptVersion = "1.1.1";
         const contractScriptName = `${scriptName}-v${scriptVersion}`;
 
         const traitsRarities = [
@@ -75,7 +75,7 @@ describe("LifeOnchain", function () {
         it("Matching script name", async function () {
             const { lifeContract } = await deploy();
             expect(await lifeContract._scriptyScriptName()).to.equal(
-                "lifeonchain-v1.1.0"
+                "lifeonchain-v1.1.1"
             );
         });
 
