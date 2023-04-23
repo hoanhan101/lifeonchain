@@ -12,7 +12,7 @@ describe("LifeOnchain", function () {
         const contractSupply = 333;
 
         const scriptName = "lifeonchain";
-        const scriptVersion = "1.0.1";
+        const scriptVersion = "1.1.0";
         const contractScriptName = `${scriptName}-v${scriptVersion}`;
 
         const traitsRarities = [
@@ -21,11 +21,19 @@ describe("LifeOnchain", function () {
                 125, 225, 325, 525, 525, 525, 625, 625, 625, 725, 825, 825, 825,
                 825, 925, 925,
             ],
-            [200, 500, 700, 800, 800, 900, 1000, 1000, 1200, 1300, 1600],
+            [
+                100, 100, 100, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200,
+                200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
+                200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
+                200, 300, 400, 400, 400, 400, 500,
+            ],
         ];
-        const traitsRaritiesHash =
-            "0x43252ab79379691f924d20ae52eae95ea7897214a8cc7f8f475ef571bc4bc022";
-
+        const traitsRaritiesHash = ethers.utils.keccak256(
+            ethers.utils.defaultAbiCoder.encode(
+                ["uint256[][]"],
+                [traitsRarities]
+            )
+        );
         const contentStoreContract = await (
             await ethers.getContractFactory("ContentStore")
         ).deploy();
@@ -58,6 +66,7 @@ describe("LifeOnchain", function () {
             lifeContract,
             contractScriptName,
             traitsRarities,
+            traitsRaritiesHash,
             contractSupply,
         };
     }
@@ -66,7 +75,14 @@ describe("LifeOnchain", function () {
         it("Matching script name", async function () {
             const { lifeContract } = await deploy();
             expect(await lifeContract._scriptyScriptName()).to.equal(
-                "lifeonchain-v1.0.1"
+                "lifeonchain-v1.1.0"
+            );
+        });
+
+        it("Matching trait rarities hash", async function () {
+            const { traitsRaritiesHash } = await deploy();
+            expect(traitsRaritiesHash).to.equal(
+                "0x370d699e0c40bd629e7ec442c4fa576061e5571e020027a00b231497cb52c45a"
             );
         });
 
