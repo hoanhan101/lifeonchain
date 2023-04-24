@@ -132,7 +132,7 @@ async function main() {
         "0x370d699e0c40bd629e7ec442c4fa576061e5571e020027a00b231497cb52c45a";
 
     const scriptName = "lifeonchain";
-    const scriptVersion = "1.1.1";
+    const scriptVersion = "1.3.0";
     const contractScriptName = `${scriptName}-v${scriptVersion}`;
     const contractScriptNameMinified = `${contractScriptName}.min`;
 

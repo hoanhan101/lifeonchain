@@ -12,7 +12,7 @@ describe("LifeOnchain", function () {
         const contractSupply = 333;
 
         const scriptName = "lifeonchain";
-        const scriptVersion = "1.1.1";
+        const scriptVersion = "1.3.0";
         const contractScriptName = `${scriptName}-v${scriptVersion}`;
 
         const traitsRarities = [
@@ -75,7 +75,7 @@ describe("LifeOnchain", function () {
         it("Matching script name", async function () {
             const { lifeContract } = await deploy();
             expect(await lifeContract._scriptyScriptName()).to.equal(
-                "lifeonchain-v1.1.1"
+                "lifeonchain-v1.3.0"
             );
         });
 
@@ -126,6 +126,7 @@ describe("LifeOnchain", function () {
             const payload = JSON.parse(
                 tokenURI.split("data:application/json,")[1]
             );
+            console.log(payload.image);
             const content = decodeURIComponent(
                 decodeURIComponent(payload.animation_url)
             ).split("data:text/html,")[1];
@@ -174,6 +175,7 @@ describe("LifeOnchain", function () {
                 const payload = JSON.parse(
                     tokenURI.split("data:application/json,")[1]
                 );
+                console.log(payload.image);
                 const content = decodeURIComponent(
                     decodeURIComponent(payload.animation_url)
                 ).split("data:text/html,")[1];
@@ -184,7 +186,7 @@ describe("LifeOnchain", function () {
                 );
                 const scriptFileContent = utilities.readFile(scriptFilePath);
                 const final = [
-                    "<!DOCTYPE html><html><head><title>1337c475</title></head>",
+                    "<!DOCTYPE html><html><head><title>LIFEONCHAIN</title></head>",
                     content.replace(
                         '<script src="data:text/javascript;base64,"></script>',
                         `<script>${scriptFileContent}</script>`

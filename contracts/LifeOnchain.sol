@@ -35,8 +35,8 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     string[][3] traitsNames;
     bytes32 traitsRaritiesHash;
 
-    string[16] thumbnailsColorsLeft;
-    string[16] thumbnailsColorsRight;
+    uint8[][46] thumbnailsDNAs;
+    string[][16] thumbnailsColors;
 
     mapping(bytes32 => bool) foundTraits;
     mapping(uint256 => Traits) livesTraits;
@@ -142,41 +142,72 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             "original"
         ];
 
-        thumbnailsColorsLeft = [
-            "#000000",
-            "#4dff4d",
-            "#00ff00",
-            "#00ffff",
-            "#1c1c1c",
-            "#00ff00",
-            "#ffffff",
-            "#00ff00",
-            "#1c1c1c",
-            "#000000",
-            "#00ffff",
-            "#00ff00",
-            "#00ff00",
-            "#000000",
-            "#00ff7f",
-            "#000000"
+        thumbnailsDNAs = [
+            [0, 0, 1, 0, 0, 1, 0, 0, 1],
+            [1, 1, 1, 1, 0, 1, 1, 1, 1],
+            [0, 0, 0, 0, 1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 1, 0, 0, 1, 0],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 1, 1, 1, 0],
+            [0, 0, 0, 1, 1, 1, 0, 0, 0],
+            [0, 0, 0, 1, 1, 0, 0, 0, 0],
+            [1, 0, 0, 1, 1, 0, 1, 0, 0],
+            [1, 1, 1, 0, 0, 0, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 0, 0, 0, 1, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 1, 0, 0, 0, 0, 1, 1, 0],
+            [1, 0, 1, 1, 0, 0, 1, 1, 1],
+            [0, 0, 0, 1, 0, 0, 0, 0, 0],
+            [1, 1, 0, 1, 0, 1, 0, 1, 1],
+            [0, 0, 1, 1, 1, 1, 1, 0, 0],
+            [0, 0, 0, 1, 0, 1, 1, 0, 1],
+            [0, 1, 1, 0, 1, 0, 1, 1, 0],
+            [0, 0, 1, 0, 1, 0, 1, 0, 0],
+            [1, 1, 0, 1, 1, 0, 0, 0, 0],
+            [0, 1, 0, 0, 1, 1, 0, 1, 0],
+            [1, 0, 1, 0, 0, 0, 1, 0, 1],
+            [0, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 1, 0],
+            [1, 0, 0, 0, 0, 1, 1, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 1, 0, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 1, 1, 0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0, 0, 1, 0, 0],
+            [0, 1, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1],
+            [0, 0, 0, 1, 0, 1, 1, 1, 0],
+            [1, 1, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 0, 1, 1, 1, 0, 1, 0],
+            [0, 1, 0, 0, 0, 1, 0, 1, 0],
+            [0, 0, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 1, 0],
+            [1, 0, 1, 0, 0, 1, 1, 0, 0],
+            [0, 0, 0, 1, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0],
+            [0, 1, 1, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 1, 0, 0, 0, 1]
         ];
-        thumbnailsColorsRight = [
-            "#000000",
-            "#000000",
-            "#0f701e",
-            "#04af6d",
-            "#000000",
-            "#ff0090",
-            "#1e90ff",
-            "#ff00ff",
-            "#ff6a00",
-            "#00ff7f",
-            "#8a2be2",
-            "#c21e56",
-            "#a62b2b",
-            "#f9dc24",
-            "#7f00ff",
-            "#4dff4d"
+
+        thumbnailsColors = [
+            ["#000000", "#000000"],
+            ["#4dff4d", "#000000"],
+            ["#00ff00", "#0f701e"],
+            ["#00ffff", "#04af6d"],
+            ["#1c1c1c", "#000000"],
+            ["#00ff00", "#ff0090"],
+            ["#ffffff", "#1e90ff"],
+            ["#00ff00", "#ff00ff"],
+            ["#1c1c1c", "#ff6a00"],
+            ["#000000", "#00ff7f"],
+            ["#00ffff", "#8a2be2"],
+            ["#00ff00", "#c21e56"],
+            ["#00ff00", "#a62b2b"],
+            ["#000000", "#f9dc24"],
+            ["#00ff7f", "#7f00ff"],
+            ["#000000", "#4dff4d"]
         ];
     }
 
@@ -323,7 +354,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             '", "description":"',
             "LIFEONCHAIN is an onchain and interactive implementation of Conway's Game of Life with a twist",
             '","image":"data:image/svg+xml;base64,',
-            buildThumbnail(traits.colorIndex),
+            buildThumbnail(traits),
             '","animation_url":"',
             buildAnimationURI(requests),
             '",',
@@ -404,16 +435,36 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
      * @notice Build thumbnail
      */
     function buildThumbnail(
-        uint256 colorIndex
+        Traits memory traits
     ) internal view returns (string memory thumbnail) {
+        string memory body;
+        uint8 counter;
+        string[3] memory spacing = ["0%", "33.33%", "66.66%"];
+        for (uint8 i = 0; i < 3; i++) {
+            for (uint j = 0; j < 3; j++) {
+                body = string(
+                    abi.encodePacked(
+                        body,
+                        '<rect x="',
+                        spacing[j],
+                        '" y="',
+                        spacing[i],
+                        '" width="33.33%" height="33.33%" fill="',
+                        thumbnailsColors[traits.colorIndex][
+                            thumbnailsDNAs[traits.modeIndex][counter]
+                        ],
+                        '" />'
+                    )
+                );
+                ++counter;
+            }
+        }
         return
             SmallSolady.encode(
                 abi.encodePacked(
-                    '<svg width="100%" height="100%" viewBox="0 0 20000 20000" xmlns="http://www.w3.org/2000/svg"> <rect x="0%" y="0%" width="50%" height="100%" fill="',
-                    thumbnailsColorsLeft[colorIndex],
-                    '"/> <rect x="50%" y="0%" width="50%" height="100%" fill="',
-                    thumbnailsColorsRight[colorIndex],
-                    '"/></svg>'
+                    '<svg width="100%" height="100%" viewBox="0 0 20000 20000" xmlns="http://www.w3.org/2000/svg">',
+                    body,
+                    "</svg>"
                 )
             );
     }
