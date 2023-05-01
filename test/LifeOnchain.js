@@ -12,20 +12,20 @@ describe("LifeOnchain", function () {
         const contractSupply = 333;
 
         const scriptName = "lifeonchain";
-        const scriptVersion = "1.3.0";
+        const scriptVersion = "1.4.0";
         const contractScriptName = `${scriptName}-v${scriptVersion}`;
 
         const traitsRarities = [
             [500, 500, 1500, 2000, 2500, 3000],
             [
-                125, 225, 325, 525, 525, 525, 625, 625, 625, 725, 825, 825, 825,
-                825, 925, 925,
+                125, 225, 325, 425, 500, 550, 600, 625, 650, 715, 755, 835, 855,
+                915, 925, 975,
             ],
             [
-                100, 100, 100, 150, 150, 200, 200, 200, 200, 200, 200, 200, 200,
-                200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
-                200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200,
-                200, 300, 400, 400, 400, 400, 500,
+                10, 10, 10, 20, 20, 20, 30, 40, 40, 50, 60, 70, 80, 90, 100,
+                120, 130, 140, 150, 160, 170, 190, 240, 240, 250, 260, 270, 280,
+                290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410,
+                420, 430, 440, 450, 460,
             ],
         ];
         const traitsRaritiesHash = ethers.utils.keccak256(
@@ -75,14 +75,14 @@ describe("LifeOnchain", function () {
         it("Matching script name", async function () {
             const { lifeContract } = await deploy();
             expect(await lifeContract._scriptyScriptName()).to.equal(
-                "lifeonchain-v1.3.0"
+                "lifeonchain-v1.4.0"
             );
         });
 
         it("Matching trait rarities hash", async function () {
             const { traitsRaritiesHash } = await deploy();
             expect(traitsRaritiesHash).to.equal(
-                "0x370d699e0c40bd629e7ec442c4fa576061e5571e020027a00b231497cb52c45a"
+                "0x8822b2c7dfb2ebe36b689a2290b289b4584f51decdbba4aaab1756a8e935f873"
             );
         });
 

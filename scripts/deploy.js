@@ -129,10 +129,10 @@ async function main() {
     const contractSymbol = "LIFE";
     const contractSupply = 333;
     const traitsRaritiesHash =
-        "0x370d699e0c40bd629e7ec442c4fa576061e5571e020027a00b231497cb52c45a";
+        "0x8822b2c7dfb2ebe36b689a2290b289b4584f51decdbba4aaab1756a8e935f873";
 
     const scriptName = "lifeonchain";
-    const scriptVersion = "1.3.0";
+    const scriptVersion = "1.4.0";
     const contractScriptName = `${scriptName}-v${scriptVersion}`;
     const contractScriptNameMinified = `${contractScriptName}.min`;
 

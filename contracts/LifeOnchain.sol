@@ -69,11 +69,11 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
 
         traitsNames[0] = [
             "blistering",
+            "sluggish",
             "rapid",
-            "swift",
-            "moderate",
             "leisurely",
-            "sluggish"
+            "swift",
+            "moderate"
         ];
         traitsNames[1] = [
             "rainbow",
@@ -352,7 +352,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             " #",
             SmallSolady.toString(tokenId),
             '", "description":"',
-            "LIFEONCHAIN is an onchain and interactive implementation of Conway's Game of Life with a twist",
+            "LIFEONCHAIN is an onchain and interactive implementation of Conway's Game of Life with a twist. There are 333 pieces in total. Each piece is created randomly among 46 modes, 16 colors and 6 speed settings. All start out simple. Some grow and expand indefinitely. Some stabilize overtime. Some just freeze. To interact with the piece, click on it, drag & drop to create life. Observe the change. A tiny change can produce a vastly difference result. Complexity arises from simplicity. Different screen sizes also affect how the simulation evoles.",
             '","image":"data:image/svg+xml;base64,',
             buildThumbnail(traits),
             '","animation_url":"',
