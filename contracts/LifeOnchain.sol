@@ -45,7 +45,6 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     error ContractMinter();
     error SoldOut();
     error InsufficientFunds();
-    error WalletMax();
     error TokenDoesntExist();
     error ZeroBalance();
     error FailToWithdraw();
