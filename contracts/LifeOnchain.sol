@@ -39,7 +39,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     string[][16] thumbnailsColors;
 
     mapping(uint256 => uint256) foundTraits;
-    mapping(uint256 => Traits) livesTraits;
+    mapping(uint256 => uint256) livesTraits;
 
     error MintClosed();
     error ContractMinter();
@@ -264,21 +264,24 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
         uint256[] calldata speedRarities = traitsRarities[0];
         uint256[] calldata colorRarities = traitsRarities[1];
         uint256[] calldata modeRarities = traitsRarities[2];
-        uint256 combination;
 
-        Traits memory traits;
+        uint256 traitCombination;
+        uint256 speedIndex;
+        uint256 colorIndex;
+        uint256 modeIndex;
+
         while (true) {
-            traits.speedIndex = getRandomTraitIndex(speedRarities, seed);
-            traits.colorIndex = getRandomTraitIndex(colorRarities, seed >> 16);
-            traits.modeIndex = getRandomTraitIndex(modeRarities, seed >> 32);
+            speedIndex = getRandomTraitIndex(speedRarities, seed);
+            colorIndex = getRandomTraitIndex(colorRarities, seed >> 16);
+            modeIndex = getRandomTraitIndex(modeRarities, seed >> 32);
 
-            combination =
-                (uint256(traits.speedIndex) << 32) |
-                (uint256(traits.colorIndex) << 16) |
-                uint256(traits.modeIndex);
-            if (foundTraits[combination] == 0) {
-                foundTraits[combination] = 1;
-                livesTraits[currentTokenId] = traits;
+            traitCombination =
+                (speedIndex << 32) |
+                (colorIndex << 16) |
+                modeIndex;
+            if (foundTraits[traitCombination] == 0) {
+                foundTraits[traitCombination] = 1;
+                _storeTraits(currentTokenId, traitCombination);
 
                 unchecked {
                     ++currentTokenId;
@@ -296,7 +299,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     function getRandomTraitIndex(
         uint256[] calldata traitRarities,
         uint256 seed
-    ) private pure returns (uint16 index) {
+    ) private pure returns (uint256 index) {
         uint256 rand = seed % 10000;
         uint256 lowerBound;
         uint256 upperBound;
@@ -307,7 +310,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             upperBound = lowerBound + percentage;
 
             if (rand >= lowerBound && rand < upperBound) {
-                return uint16(i);
+                return i;
             }
 
             unchecked {
@@ -332,7 +335,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     {
         if (!_exists(tokenId)) revert TokenDoesntExist();
 
-        Traits memory traits = livesTraits[tokenId];
+        Traits memory traits = _getTraits(tokenId);
         bytes memory attr = buildAttributes(traits);
         bytes memory vars = buildVars(tokenId, traits);
 
@@ -473,6 +476,37 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
                     "</svg>"
                 )
             );
+    }
+
+    function _storeTraits(uint256 tokenId, uint256 traitCombination) internal {
+        uint256 tokenTraitBucket = tokenId % 5;
+        uint256 tokenTraitSlot = tokenId / 5;
+        uint256 traitMask = not(0xFFFFFFFFFFFF << (48 * tokenTraitSlot));
+        livesTraits[tokenTraitBucket] =
+            (livesTraits[tokenTraitBucket] & traitMask) |
+            (traitCombination << (48 * tokenTraitSlot));
+    }
+
+    function _getTraits(
+        uint256 tokenId
+    ) internal view returns (Traits memory traits) {
+        uint256 tokenTraitBucket = tokenId % 5;
+        uint256 tokenTraitSlot = tokenId / 5;
+        uint256 traitMask = 0xFFFFFFFFFFFF << (48 * tokenTraitSlot);
+        uint256 traitCombination = (livesTraits[tokenTraitBucket] &
+            traitMask) >> (48 * tokenTraitSlot);
+        traitMask = 0xFFFF;
+        traits.modeIndex = traitCombination & traitMask;
+        traitCombination >>= 16;
+        traits.colorIndex = traitCombination & traitMask;
+        traitCombination >>= 16;
+        traits.speedIndex = traitCombination & traitMask;
+    }
+
+    function not(uint256 val) internal pure returns (uint256 notval) {
+        assembly {
+            notval := not(val)
+        }
     }
 
     /**

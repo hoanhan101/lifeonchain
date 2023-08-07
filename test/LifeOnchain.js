@@ -118,7 +118,7 @@ describe("LifeOnchain", function () {
                 lifeContract.mint(1, traitsRarities, {
                     value: ethers.utils.parseEther("1"),
                 })
-            );
+            ).to.not.be.reverted;
             expect(await lifeContract.totalSupply()).to.equal(1);
 
             const tokenURI = await lifeContract.tokenURI(0);
@@ -179,7 +179,6 @@ describe("LifeOnchain", function () {
                 const content = decodeURIComponent(
                     decodeURIComponent(payload.animation_url)
                 ).split("data:text/html,")[1];
-                console.log(content);
 
                 const scriptFilePath = path.join(
                     __dirname,
