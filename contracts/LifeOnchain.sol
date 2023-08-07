@@ -38,7 +38,7 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     uint8[][46] thumbnailsDNAs;
     string[][16] thumbnailsColors;
 
-    mapping(bytes32 => bool) foundTraits;
+    mapping(uint256 => uint256) foundTraits;
     mapping(uint256 => Traits) livesTraits;
 
     error MintClosed();
@@ -261,32 +261,31 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
         );
 
         uint256 currentTokenId = startTokenId;
+        uint256[] calldata speedRarities = traitsRarities[0];
+        uint256[] calldata colorRarities = traitsRarities[1];
+        uint256[] calldata modeRarities = traitsRarities[2];
+        uint256 combination;
+
         Traits memory traits;
         while (true) {
-            traits.speedIndex = getRandomTraitIndex(traitsRarities[0], seed);
-            traits.colorIndex = getRandomTraitIndex(
-                traitsRarities[1],
-                seed >> 16
-            );
-            traits.modeIndex = getRandomTraitIndex(
-                traitsRarities[2],
-                seed >> 32
-            );
+            traits.speedIndex = getRandomTraitIndex(speedRarities, seed);
+            traits.colorIndex = getRandomTraitIndex(colorRarities, seed >> 16);
+            traits.modeIndex = getRandomTraitIndex(modeRarities, seed >> 32);
 
-            bytes32 combination = keccak256(abi.encode(traits));
-            if (!foundTraits[combination]) {
-                foundTraits[combination] = true;
+            combination =
+                (uint256(traits.speedIndex) << 32) |
+                (uint256(traits.colorIndex) << 16) |
+                uint256(traits.modeIndex);
+            if (foundTraits[combination] == 0) {
+                foundTraits[combination] = 1;
                 livesTraits[currentTokenId] = traits;
 
                 unchecked {
                     ++currentTokenId;
                     if (currentTokenId > (startTokenId + amount)) break;
                 }
-                seed = uint256(keccak256(abi.encode(seed)));
             }
-            unchecked {
-                ++seed;
-            }
+            seed = uint256(keccak256(abi.encode(seed)));
         }
     }
 
@@ -300,13 +299,21 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     ) private pure returns (uint16 index) {
         uint256 rand = seed % 10000;
         uint256 lowerBound;
-        for (uint256 i = 0; i < traitRarities.length; i++) {
-            uint256 percentage = traitRarities[i];
+        uint256 upperBound;
+        uint256 percentage;
 
-            if (rand < percentage + lowerBound && rand >= lowerBound) {
+        for (uint256 i; i < traitRarities.length; ) {
+            percentage = traitRarities[i];
+            upperBound = lowerBound + percentage;
+
+            if (rand >= lowerBound && rand < upperBound) {
                 return uint16(i);
             }
-            lowerBound = lowerBound + percentage;
+
+            unchecked {
+                lowerBound += percentage;
+                ++i;
+            }
         }
         revert();
     }

@@ -179,6 +179,7 @@ describe("LifeOnchain", function () {
                 const content = decodeURIComponent(
                     decodeURIComponent(payload.animation_url)
                 ).split("data:text/html,")[1];
+                console.log(content);
 
                 const scriptFilePath = path.join(
                     __dirname,
