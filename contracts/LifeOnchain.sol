@@ -276,8 +276,8 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
             modeIndex = getRandomTraitIndex(modeRarities, seed >> 32);
 
             traitCombination =
-                (speedIndex << 32) |
-                (colorIndex << 16) |
+                (speedIndex << 16) |
+                (colorIndex << 8) |
                 modeIndex;
             if (foundTraits[traitCombination] == 0) {
                 foundTraits[traitCombination] = 1;
@@ -479,27 +479,27 @@ contract LifeOnchain is ERC721A, ERC721AQueryable, ERC721ABurnable, Ownable {
     }
 
     function _storeTraits(uint256 tokenId, uint256 traitCombination) internal {
-        uint256 tokenTraitBucket = tokenId % 5;
-        uint256 tokenTraitSlot = tokenId / 5;
-        uint256 traitMask = not(0xFFFFFFFFFFFF << (48 * tokenTraitSlot));
+        uint256 tokenTraitBucket = tokenId / 10;
+        uint256 tokenTraitSlot = tokenId % 10;
+        uint256 traitMask = not(0xFFFFFF << (24 * tokenTraitSlot));
         livesTraits[tokenTraitBucket] =
             (livesTraits[tokenTraitBucket] & traitMask) |
-            (traitCombination << (48 * tokenTraitSlot));
+            (traitCombination << (24 * tokenTraitSlot));
     }
 
     function _getTraits(
         uint256 tokenId
     ) internal view returns (Traits memory traits) {
-        uint256 tokenTraitBucket = tokenId % 5;
-        uint256 tokenTraitSlot = tokenId / 5;
-        uint256 traitMask = 0xFFFFFFFFFFFF << (48 * tokenTraitSlot);
+        uint256 tokenTraitBucket = tokenId / 10;
+        uint256 tokenTraitSlot = tokenId % 10;
+        uint256 traitMask = 0xFFFFFF << (24 * tokenTraitSlot);
         uint256 traitCombination = (livesTraits[tokenTraitBucket] &
-            traitMask) >> (48 * tokenTraitSlot);
-        traitMask = 0xFFFF;
+            traitMask) >> (24 * tokenTraitSlot);
+        traitMask = 0xFF;
         traits.modeIndex = traitCombination & traitMask;
-        traitCombination >>= 16;
+        traitCombination >>= 8;
         traits.colorIndex = traitCombination & traitMask;
-        traitCombination >>= 16;
+        traitCombination >>= 8;
         traits.speedIndex = traitCombination & traitMask;
     }
 
